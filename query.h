@@ -1,7 +1,7 @@
 #ifndef QUERY_H
 #define QUERY_H
 
-#include <string.h>
+#include <string>
 
 
 struct Point
