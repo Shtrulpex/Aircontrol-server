@@ -10,10 +10,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(${PROJECT_NAME} main.cpp)
 
 add_library(data_exchange
+            query.h
             query.cpp
-            query.h)
+            data_object.h
+            data_object.cpp)
 
 target_link_libraries(${PROJECT_NAME}
                         data_exchange)
-
-target_link_directories(resourses)
