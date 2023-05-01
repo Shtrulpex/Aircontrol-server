@@ -13,7 +13,9 @@ add_library(data_exchange
             support.h
             support.cpp
             data_object.h
-            data_object.cpp)
+            data_object.cpp
+            query.h
+            query.cpp)
 
 target_link_libraries(${PROJECT_NAME}
                         data_exchange)
