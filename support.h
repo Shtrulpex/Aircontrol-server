@@ -1,5 +1,5 @@
-#ifndef QUERY_H
-#define QUERY_H
+#ifndef SUPPORT_H
+#define SUPPORT_H
 
 #include <string>
 
@@ -19,4 +19,4 @@ struct Name
 };
 
 
-#endif // QUERY_H
+#endif // SUPPORT_H
