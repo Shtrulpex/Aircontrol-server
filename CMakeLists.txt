@@ -15,7 +15,9 @@ add_library(data_exchange
             data_object.h
             data_object.cpp
             query.h
-            query.cpp)
+            query.cpp
+            db_controller.h
+            db_controller.cpp)
 
 target_link_libraries(${PROJECT_NAME}
                         data_exchange)
