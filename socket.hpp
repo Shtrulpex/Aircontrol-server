@@ -65,7 +65,7 @@ template <typename T>
 Socket& Socket::operator<< (const T& val)
 {
     io_helper<T, std::is_class<T>::value, std::is_same<decltype(has_iterator<T>(nullptr)), yes>::value>::
-        out (*this, rw_fd, val);
+        out (*this, *rw_fd_ptr, val);
     return *this;
 }
 
@@ -73,7 +73,7 @@ template <typename T>
 Socket& Socket::operator>> (T& val)
 {
     io_helper<T, std::is_class<T>::value, std::is_same<decltype(has_iterator<T>(nullptr)), yes>::value>::
-        in (*this, rw_fd, val);
+        in (*this, *rw_fd_ptr, val);
     return *this;
 }
 

@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <memory>
 
 #include <string>
 
@@ -17,10 +18,10 @@ class Socket
 public:
     Socket (std::string ip = "", int port = 0);
 
-    Socket            (const Socket&) = delete;
-    Socket            (Socket&&)      = delete;
-    Socket& operator= (const Socket&) = delete;
-    Socket& operator= (Socket&&)      = delete;
+    Socket            (const Socket&) = default;
+    Socket            (Socket&&)      = default;
+    Socket& operator= (const Socket&) = default;
+    Socket& operator= (Socket&&)      = default;
    
     bool listen  (int queue_size);
     bool connect (std::string ip = "", int port = 0);
@@ -38,10 +39,10 @@ public:
 private:
     void reset ();
 
-    int self_fd;
-    sockaddr_in self_addr;
-    int rw_fd;
-    sockaddr_in extern_addr;
+    std::shared_ptr<int> self_fd_ptr;
+    std::shared_ptr<sockaddr_in> self_addr_ptr;
+    std::shared_ptr<int> rw_fd_ptr;
+    std::shared_ptr<sockaddr_in> extern_addr_ptr;
 };
 
 
