@@ -1,6 +1,7 @@
 #ifndef DB_CONTROLLER_H
 #define DB_CONTROLLER_H
 
+#include <QtSql>
 #include "data_object.h"
 #include "query.h"
 #include <vector>
