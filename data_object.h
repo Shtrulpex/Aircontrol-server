@@ -13,7 +13,7 @@ struct Airport
     Name name;
     Name city;
     Name country;
-    double gmt; // нужно ли привязывать к аэропорту или лучше к городу?
+    double gmt; // нужно ли привязывать к аэропорту или лучше к городу? (внимание, это дабл)
 };
 
 

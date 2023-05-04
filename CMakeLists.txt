@@ -25,7 +25,7 @@ add_library(${DATA_EXCHANGE}
             db_controller.h
             db_controller.cpp)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PRIVATE
                         data_exchange)
 
 
