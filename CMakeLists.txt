@@ -11,7 +11,10 @@ find_package(Qt5 COMPONENTS
             Sql
             REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}
+                main.cpp
+                tests.h
+                tests.cpp)
 
 set(DATA_EXCHANGE data_exchange)
 
