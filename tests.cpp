@@ -24,7 +24,7 @@ void test1()
 {
     AirportQuery example;
     example.country.eng = "Russian Federation";
-    print_airports(run_query(example));
+//    print_airports(run_query(example));
 }
 
 
