@@ -67,5 +67,11 @@ QString get_sqlquery(const AirportQuery& aq)
     if (aq.city.rus != "")
         conditions.push_back(QString("city_rus = '%1'").arg(QString::fromStdString(aq.city.rus)));
 
+    if (conditions.size() > 0)
+    {
+        sqlquery += " WHERE ";
+        sqlquery += join(conditions.begin(), conditions.end(), " and ");
+    }
+
     return sqlquery;
 }
