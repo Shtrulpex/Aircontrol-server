@@ -70,7 +70,7 @@ QString get_sqlquery(const AirportQuery& aq)
     if (conditions.size() > 0)
     {
         sqlquery += " WHERE ";
-        sqlquery += join(conditions.begin(), conditions.end(), " and ");
+        sqlquery += join(conditions.begin(), conditions.end(), std::string(" AND "));
     }
 
     return sqlquery;

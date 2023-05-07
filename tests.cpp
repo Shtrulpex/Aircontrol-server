@@ -1,5 +1,4 @@
-#include "db_controller.h"
-#include <iostream>
+#include "tests.h"
 
 
 std::ostream &operator<<(std::ostream &o, const Airport &a)
@@ -20,11 +19,23 @@ void print_airports(const std::vector<Airport>& airports)
 }
 
 
-void test1()
+void test_1()
 {
     AirportQuery example;
     example.country.eng = "Russian Federation";
 //    print_airports(run_query(example));
+}
+
+
+void test_2()
+{
+    AirportQuery example;
+    example.country.eng = "Russian Federation";
+    example.max_radius = 1e5;
+    example.location.latitude = 41.40338;
+    example.location.longitude = 2.17403;
+
+    std::cout << get_sqlquery(example).toStdString();
 }
 
 
