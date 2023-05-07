@@ -17,6 +17,7 @@ QSqlDatabase connect(const QString& driver, const QString& filepath)
     return sdb;
 }
 
+
 QString get_sqlquery(const AirportQuery& aq)
 {
     QString sqlquery{"SELECT * FROM airports"};
@@ -74,4 +75,31 @@ QString get_sqlquery(const AirportQuery& aq)
     }
 
     return sqlquery;
+}
+
+
+QSqlQuery run_sqlquery(const QString& sqlquery, const QSqlDatabase& sdb)
+{
+    QSqlQuery qquery(sdb);
+    bool success_run = qquery.exec(sqlquery);
+    if (!success_run)
+    {
+        qDebug() << "Can't run query: " << sqlquery << " " << qquery.lastError();
+    }
+    return qquery;
+}
+
+
+std::vector<Airport> get_airports(const QSqlQuery& q_query)
+{
+
+}
+
+
+std::vector<Airport> run_query(const AirportQuery& query)
+{
+    QSqlDatabase sdb = connect(SQL_DRIVER, DB_FILEPATH);
+    QString sqlquery = get_sqlquery(query);
+    QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
+    return get_airports(qquery);
 }

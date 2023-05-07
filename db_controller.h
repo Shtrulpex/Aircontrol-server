@@ -8,16 +8,15 @@
 #include <string>
 
 
-std::vector<Plane> run_query(const PlaneQuery& query);
 std::vector<Airport> run_query(const AirportQuery& query);
+std::vector<Plane> run_query(const PlaneQuery& query);
 
 QSqlDatabase connect(const QString& driver, const QString& filepath);
 
-QString get_sqlquery(const PlaneQuery&);
 QString get_sqlquery(const AirportQuery&);
+QString get_sqlquery(const PlaneQuery&);
 
-QSqlQuery run_sqlquery(const QSqlQuery& q_query);
-QSqlQuery run_sqlquery(const QSqlQuery& q_query);
+QSqlQuery run_sqlquery(const QString& sqlquery, const QSqlDatabase& sqd);
 
 std::vector<Airport> get_airports(const QSqlQuery& q_query);
 std::vector<Plane> get_planes(const QSqlQuery& q_query);
