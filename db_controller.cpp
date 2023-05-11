@@ -32,11 +32,11 @@ QString get_sqlquery(const AirportQuery& aq)
     if (aq.min_runway_length != 0.0)
         conditions.push_back(QString("runway_length >= %1").arg(aq.min_runway_length));
     if (aq.iata_code != "")
-        conditions.push_back(QString("iata_code = '%1'").arg(QString::fromStdString(aq.iata_code)));
+        conditions.push_back(QString("iata_code LIKE '\%%1\%'").arg(QString::fromStdString(aq.iata_code)));
     if (aq.icao_code != "")
-        conditions.push_back(QString("icao_code = '%1'").arg(QString::fromStdString(aq.icao_code)));
+        conditions.push_back(QString("icao_code LIKE '\%%1\%'").arg(QString::fromStdString(aq.icao_code)));
     if (aq.iso_code != "")
-        conditions.push_back(QString("iso_code = '%1'").arg(QString::fromStdString(aq.iso_code)));
+        conditions.push_back(QString("iso_code LIKE '\%%1\%'").arg(QString::fromStdString(aq.iso_code)));
     if (aq.loc.latitude != 0.0 && aq.loc.longitude != 0.0)
     {
         if (aq.max_radius != 0.0)
@@ -71,17 +71,17 @@ QString get_sqlquery(const AirportQuery& aq)
         }
     }
     if (aq.name.eng != "")
-        conditions.push_back(QString("name_eng = '%1'").arg(QString::fromStdString(aq.name.eng)));
+        conditions.push_back(QString("name_eng LIKE '\%%1\%'").arg(QString::fromStdString(aq.name.eng)));
     if (aq.name.rus != "")
-        conditions.push_back(QString("name_rus = '%1'").arg(QString::fromStdString(aq.name.rus)));
+        conditions.push_back(QString("name_rus LIKE '\%%1\%'").arg(QString::fromStdString(aq.name.rus)));
     if (aq.country.eng != "")
-        conditions.push_back(QString("country_eng = '%1'").arg(QString::fromStdString(aq.country.eng)));
+        conditions.push_back(QString("country_eng LIKE '\%%1\%'").arg(QString::fromStdString(aq.country.eng)));
     if (aq.country.rus != "")
-        conditions.push_back(QString("country_rus = '%1'").arg(QString::fromStdString(aq.country.rus)));
+        conditions.push_back(QString("country_rus LIKE '\%%1\%'").arg(QString::fromStdString(aq.country.rus)));
     if (aq.city.eng != "")
-        conditions.push_back(QString("city_eng = '%1'").arg(QString::fromStdString(aq.city.eng)));
+        conditions.push_back(QString("city_eng LIKE '\%%1\%'").arg(QString::fromStdString(aq.city.eng)));
     if (aq.city.rus != "")
-        conditions.push_back(QString("city_rus = '%1'").arg(QString::fromStdString(aq.city.rus)));
+        conditions.push_back(QString("city_rus LIKE '\%%1\%'").arg(QString::fromStdString(aq.city.rus)));
 
     if (conditions.size() > 0)
     {
