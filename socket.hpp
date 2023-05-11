@@ -13,30 +13,35 @@ template <typename T>
 no has_iterator (...);
 
 
-template <typename T, bool is_class, bool has_iter>
-struct io_helper;
-
 template <typename T, bool has_iter>
-struct io_helper<T, false, has_iter>
+struct Socket::io_helper<T, false, has_iter>
 {
-    static void out(Socket& s, int fd, const T& val)
-    { write (fd, (char*)&val, sizeof(T)); }
+    static void out(Socket& s, const T& val)
+    {
+        s.rw_mutex_ptr -> lock(); 
+        write (*s.rw_fd_ptr, (char*)&val, sizeof(T));
+        s.rw_mutex_ptr -> unlock();
+    }
     
-    static void in(Socket& s, int fd, T& val)
-    { read (fd, (char*)&val, sizeof(T)); }
+    static void in(Socket& s, T& val)
+    {
+        s.rw_mutex_ptr -> lock(); 
+        read (*s.rw_fd_ptr, (char*)&val, sizeof(T)); 
+        s.rw_mutex_ptr -> unlock();
+    }
 };
 
 template <typename T>
-struct io_helper<T, true, true>
+struct Socket::io_helper<T, true, true>
 {
-    static void out(Socket& s, int fd, const T& val)
+    static void out(Socket& s, const T& val)
     {
         s << val.size();
         for (const auto& x : val)
             s << x;
     }
 
-    static void in(Socket& s, int fd, T& val)
+    static void in(Socket& s, T& val)
     {
         size_t sz;
         s >> sz;
@@ -51,12 +56,12 @@ struct io_helper<T, true, true>
 };
 
 template <typename T>
-struct io_helper<T, true, false>
+struct Socket::io_helper<T, true, false>
 {
-    static void out(Socket& s, int fd, const T& val)
+    static void out(Socket& s, const T& val)
     { magic_out::print_impl<T>(s, val, std::make_index_sequence<flat_tuple_size<T>::value>{}); }
     
-    static void in(Socket& s, int fd, T& val)
+    static void in(Socket& s, T& val)
     { magic_in::print_impl<T>(s, val, std::make_index_sequence<flat_tuple_size<T>::value>{}); }
 };
 
@@ -64,16 +69,16 @@ struct io_helper<T, true, false>
 template <typename T>
 Socket& Socket::operator<< (const T& val)
 {
-    io_helper<T, std::is_class<T>::value, std::is_same<decltype(has_iterator<T>(nullptr)), yes>::value>::
-        out (*this, *rw_fd_ptr, val);
+    Socket::io_helper<T, std::is_class<T>::value, std::is_same<decltype(has_iterator<T>(nullptr)), yes>::value>::
+        out (*this, val);
     return *this;
 }
 
 template <typename T>
 Socket& Socket::operator>> (T& val)
 {
-    io_helper<T, std::is_class<T>::value, std::is_same<decltype(has_iterator<T>(nullptr)), yes>::value>::
-        in (*this, *rw_fd_ptr, val);
+    Socket::io_helper<T, std::is_class<T>::value, std::is_same<decltype(has_iterator<T>(nullptr)), yes>::value>::
+        in (*this, val);
     return *this;
 }
 
