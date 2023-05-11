@@ -25,6 +25,7 @@ Socket::Socket (std::string ip, int port)
         if (::bind (*self_fd_ptr, (const sockaddr*) self_addr_ptr.get(), sizeof(*self_addr_ptr)))
             throw std::runtime_error (strerror(errno));
     }
+    rw_mutex_ptr = std::shared_ptr<std::mutex> (new std::mutex);
 }
 
 
