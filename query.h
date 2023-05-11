@@ -12,6 +12,7 @@ struct AirportQuery
     double min_runway_length{0.0};
     std::string iata_code{""};
     std::string icao_code{""};
+    std::string iso_code{""};
     Name name;
     Name city;
     Name country;

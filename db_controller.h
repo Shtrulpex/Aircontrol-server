@@ -6,6 +6,7 @@
 #include "query.h"
 #include <vector>
 #include <string>
+#include <cmath>
 
 
 std::vector<Airport> run_query(const AirportQuery& query);
@@ -18,7 +19,7 @@ QString get_sqlquery(const PlaneQuery&);
 
 QSqlQuery run_sqlquery(const QString& sqlquery, const QSqlDatabase& sqd);
 
-std::vector<Airport> get_airports(const QSqlQuery& q_query);
-std::vector<Plane> get_planes(const QSqlQuery& q_query);
+std::vector<Airport> get_airports(QSqlQuery qquery);
+std::vector<Plane> get_planes(QSqlQuery qquery);
 
 #endif // DB_CONTROLLER_H

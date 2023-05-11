@@ -4,6 +4,11 @@
 const QString SQL_DRIVER = "QSQLITE";
 const QString DB_FILEPATH = "../Aircontrol-server/resources/air-planner.sqlite";
 
+// Geographic constants
+const double meridian = 40008.548;
+const double equator = 40075.696;
+const double kilometer = 1000;
+
 
 QSqlDatabase connect(const QString& driver, const QString& filepath)
 {
@@ -30,22 +35,32 @@ QString get_sqlquery(const AirportQuery& aq)
         conditions.push_back(QString("iata_code = '%1'").arg(QString::fromStdString(aq.iata_code)));
     if (aq.icao_code != "")
         conditions.push_back(QString("icao_code = '%1'").arg(QString::fromStdString(aq.icao_code)));
+    if (aq.iso_code != "")
+        conditions.push_back(QString("iso_code = '%1'").arg(QString::fromStdString(aq.iso_code)));
     if (aq.location.latitude != 0.0 && aq.location.longitude != 0.0)
     {
         if (aq.max_radius != 0.0)
         {
+            // рассчёт коэф. перевода градусов широты и долготы в метры в окрестности искомой координаты:
+            // градус широты в метрах:
+            double latitude_coef = meridian / 360;
+            // градус долготы в метрах:
+            double longitude_coef = cos(aq.location.latitude) * equator / 360;
+
             // отбор по квадрату, затем по Пифагору
-            conditions.push_back(QString("(latitude < %1 AND latitude > %3) AND "
-                                         "(longitude < %4 AND longitude > %6) AND "
-                                         "POW((latitude - %2) * 111153, 2) + "
-                                         "POW((longitude - %5) * 62555.252801631, 2) < %7").
-                                 arg(QString::number(aq.location.latitude * 0.99965),
+            conditions.push_back(QString("(latitude > %1 AND latitude < %3) AND "
+                                         "(longitude > %4 AND longitude < %6) AND "
+                                         "((latitude - %2) * %8)*((latitude - %2) * %8) + "
+                                         "((longitude - %5) * %9)*((longitude - %5) * %9) < %7").
+                                 arg(QString::number(aq.location.latitude - aq.max_radius / latitude_coef),
                                      QString::number(aq.location.latitude),
-                                     QString::number(aq.location.latitude * 1.00035),
-                                     QString::number(aq.location.longitude * 0.99915),
+                                     QString::number(aq.location.latitude + aq.max_radius / latitude_coef),
+                                     QString::number(aq.location.longitude - aq.max_radius / longitude_coef),
                                      QString::number(aq.location.longitude),
-                                     QString::number(aq.location.longitude * 1.00085),
-                                     QString::number(std::pow(aq.max_radius, 2))
+                                     QString::number(aq.location.longitude + aq.max_radius / longitude_coef),
+                                     QString::number(std::pow(aq.max_radius * kilometer, 2)),
+                                     QString::number(latitude_coef),
+                                     QString::number(longitude_coef)
                                      ));
         }
         else
@@ -90,9 +105,66 @@ QSqlQuery run_sqlquery(const QString& sqlquery, const QSqlDatabase& sdb)
 }
 
 
-std::vector<Airport> get_airports(const QSqlQuery& q_query)
+std::vector<Airport> get_airports(QSqlQuery qquery)
 {
+    std::vector<Airport> airports;
 
+    QSqlRecord record = qquery.record();
+    Point location;
+    double runway_length;
+    double gmt;
+    std::string iata_code;
+    std::string icao_code;
+    std::string iso_code;
+    Name name;
+    Name city;
+    Name country;
+
+    double longitude;
+    double latitude;
+    double height;
+    std::string name_eng;
+    std::string name_rus;
+    std::string city_eng;
+    std::string city_rus;
+    std::string country_eng;
+    std::string country_rus;
+
+    while (qquery.next())
+    {
+        longitude = qquery.value(record.indexOf("longitude")).toDouble();
+        latitude = qquery.value(record.indexOf("latitude")).toDouble();
+        height = qquery.value(record.indexOf("runway_elevation")).toDouble();
+        location = Point{longitude, latitude, height};
+
+        runway_length = qquery.value(record.indexOf("runway_length")).toDouble();
+        gmt = qquery.value(record.indexOf("gmt_offset")).toDouble();
+        iata_code = qquery.value(record.indexOf("iata_code")).toString().toStdString();
+        icao_code = qquery.value(record.indexOf("icao_code")).toString().toStdString();
+        iso_code = qquery.value(record.indexOf("iso_code")).toString().toStdString();
+
+        name_eng = qquery.value(record.indexOf("name_eng")).toString().toStdString();
+        name_rus = qquery.value(record.indexOf("name_rus")).toString().toStdString();
+        city_eng = qquery.value(record.indexOf("city_eng")).toString().toStdString();
+        city_rus = qquery.value(record.indexOf("city_rus")).toString().toStdString();
+        country_eng = qquery.value(record.indexOf("country_eng")).toString().toStdString();
+        country_rus = qquery.value(record.indexOf("country_rus")).toString().toStdString();
+        name = {name_eng, name_rus};
+        city = {city_eng, city_rus};
+        country = {country_eng, country_rus};
+
+        airports.push_back({location,
+                           runway_length,
+                            gmt,
+                            iata_code,
+                            icao_code,
+                            iso_code,
+                            name,
+                            city,
+                            country
+                           });
+    }
+    return airports;
 }
 
 

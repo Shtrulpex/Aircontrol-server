@@ -17,8 +17,8 @@ struct Point
 
 struct Name
 {
-    std::string rus{""};
     std::string eng{""};
+    std::string rus{""};
 };
 
 
