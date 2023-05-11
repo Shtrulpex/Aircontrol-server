@@ -1,0 +1,90 @@
+#ifndef DB_INTERFACE_H
+#define DB_INTERFACE_H
+
+#include <string>
+
+
+const std::string DB_FILEPATH = "../Aircontrol-server/resources/air-planner.sqlite";
+
+
+enum QueryType
+{
+    PLANE = 0,
+    AIRPORT = 1,
+    PATH_LEN = 2,
+    PATH_2D = 3,
+    PATH_3D = 4
+};
+
+
+struct Point
+{
+    double longitude{0.0};
+    double latitude{0.0};
+    double height{0.0};
+};
+
+
+struct Name
+{
+    std::string eng{""};
+    std::string rus{""};
+};
+
+
+struct Airport
+{
+    Point loc;
+    double runway_length{0.0};
+    double gmt{0.0}; // нужно ли привязывать к аэропорту или лучше к городу? (внимание, это дабл)
+    std::string iata_code{""};
+    std::string icao_code{""};
+    std::string iso_code{""};
+    Name name;
+    Name city;
+    Name country;
+};
+
+
+struct Plane
+{
+    double flight_length{0.0};
+    double flight_height{0.0};
+    double velocity{0.0};
+    double cargo_weight{0.0};
+    double required_runway_length{0.0};  // отклонился от договорённости
+    Name name;
+};
+
+
+struct AirportQuery
+{
+    Point loc;
+    double max_radius{0.0};
+    double min_runway_length{0.0};
+    std::string iata_code{""};
+    std::string icao_code{""};
+    std::string iso_code{""};
+    Name name;
+    Name city;
+    Name country;
+    double gnt{0.0};
+};
+
+
+struct PlaneQuery
+{
+    double min_flight_length{0.0};
+    double min_flight_height{0.0};
+    double min_velocity{0.0};
+    double max_required_runway_length{0.0};  // соответственно и тут поменял
+    double min_cargo_weight{0.0};
+    Name name;
+};
+
+
+std::vector<Airport> run_query(const AirportQuery& query, const std::string& db_filepath=DB_FILEPATH);
+std::vector<Plane> run_query(const PlaneQuery& query, const std::string& db_filepath=DB_FILEPATH);
+
+
+#endif // DB_INTERFACE_H

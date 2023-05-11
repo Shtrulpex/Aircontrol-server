@@ -9,8 +9,8 @@ void print_airports(const std::vector<Airport>& airports)
                      a.city.eng << " | " << a.city.rus << " | " <<
                      a.name.eng << " | " << a.name.rus << " | " <<
                      a.icao_code << " | " << a.iata_code << " | " << a.iso_code << " | " << a.gmt << " | " <<
-                     a.location.latitude << " | " << a.location.longitude << " | " <<
-                     a.runway_length << " | " << a.location.height << std::endl;
+                     a.loc.latitude << " | " << a.loc.longitude << " | " <<
+                     a.runway_length << " | " << a.loc.height << std::endl;
     }
 }
 
@@ -28,8 +28,8 @@ void test_2()
     AirportQuery example;
     example.country.eng = "Russian Federation";
     example.max_radius = 100; // ищем в радиусе 100 км
-    example.location.latitude = 55.7522; // широта Москвы
-    example.location.longitude = 37.6156; // долгота Москвы
+    example.loc.latitude = 55.7522; // широта Москвы
+    example.loc.longitude = 37.6156; // долгота Москвы
 
     std::cout << get_sqlquery(example).toStdString();
 }

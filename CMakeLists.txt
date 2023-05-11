@@ -12,25 +12,27 @@ find_package(Qt5 COMPONENTS
             REQUIRED)
 
 add_executable(${PROJECT_NAME}
-                main.cpp
-                tests.h
-                tests.cpp)
+                main.cpp)
 
-set(DATA_EXCHANGE data_exchange)
+set(LIB1 data_exchange)
+set(LIB2 tests)
 
-add_library(${DATA_EXCHANGE}
-            support.h
-            support.cpp
-            data_object.h
-            data_object.cpp
-            query.h
-            query.cpp
+add_library(${LIB1}
             db_controller.h
-            db_controller.cpp)
+            db_controller.cpp
+            database.h)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-                        data_exchange)
+add_library(${LIB2}
+            tests.h
+            tests.cpp)
 
+target_link_libraries(${PROJECT_NAME}
+                        ${LIB1}
+                        ${LIB2})
 
-target_link_libraries(${DATA_EXCHANGE}
+target_link_libraries(${LIB1} PUBLIC
+                        Qt5::Sql)
+
+target_link_libraries(${LIB2} PUBLIC
+                        ${LIB1}
                         Qt5::Sql)

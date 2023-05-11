@@ -1,8 +1,8 @@
 #include "db_controller.h"
+#include <cmath>
 
 
 const QString SQL_DRIVER = "QSQLITE";
-const QString DB_FILEPATH = "../Aircontrol-server/resources/air-planner.sqlite";
 
 // Geographic constants
 const double meridian = 40008.548;
@@ -37,7 +37,7 @@ QString get_sqlquery(const AirportQuery& aq)
         conditions.push_back(QString("icao_code = '%1'").arg(QString::fromStdString(aq.icao_code)));
     if (aq.iso_code != "")
         conditions.push_back(QString("iso_code = '%1'").arg(QString::fromStdString(aq.iso_code)));
-    if (aq.location.latitude != 0.0 && aq.location.longitude != 0.0)
+    if (aq.loc.latitude != 0.0 && aq.loc.longitude != 0.0)
     {
         if (aq.max_radius != 0.0)
         {
@@ -45,19 +45,19 @@ QString get_sqlquery(const AirportQuery& aq)
             // градус широты в метрах:
             double latitude_coef = meridian / 360;
             // градус долготы в метрах:
-            double longitude_coef = cos(aq.location.latitude) * equator / 360;
+            double longitude_coef = cos(aq.loc.latitude) * equator / 360;
 
             // отбор по квадрату, затем по Пифагору
             conditions.push_back(QString("(latitude > %1 AND latitude < %3) AND "
                                          "(longitude > %4 AND longitude < %6) AND "
                                          "((latitude - %2) * %8)*((latitude - %2) * %8) + "
                                          "((longitude - %5) * %9)*((longitude - %5) * %9) < %7").
-                                 arg(QString::number(aq.location.latitude - aq.max_radius / latitude_coef),
-                                     QString::number(aq.location.latitude),
-                                     QString::number(aq.location.latitude + aq.max_radius / latitude_coef),
-                                     QString::number(aq.location.longitude - aq.max_radius / longitude_coef),
-                                     QString::number(aq.location.longitude),
-                                     QString::number(aq.location.longitude + aq.max_radius / longitude_coef),
+                                 arg(QString::number(aq.loc.latitude - aq.max_radius / latitude_coef),
+                                     QString::number(aq.loc.latitude),
+                                     QString::number(aq.loc.latitude + aq.max_radius / latitude_coef),
+                                     QString::number(aq.loc.longitude - aq.max_radius / longitude_coef),
+                                     QString::number(aq.loc.longitude),
+                                     QString::number(aq.loc.longitude + aq.max_radius / longitude_coef),
                                      QString::number(std::pow(aq.max_radius * kilometer, 2)),
                                      QString::number(latitude_coef),
                                      QString::number(longitude_coef)
@@ -66,8 +66,8 @@ QString get_sqlquery(const AirportQuery& aq)
         else
         {
             conditions.push_back(QString("latitude = '%1' and longitude = '%2'").
-                                 arg(aq.location.latitude,
-                                     aq.location.longitude));
+                                 arg(aq.loc.latitude,
+                                     aq.loc.longitude));
         }
     }
     if (aq.name.eng != "")
@@ -110,7 +110,7 @@ std::vector<Airport> get_airports(QSqlQuery qquery)
     std::vector<Airport> airports;
 
     QSqlRecord record = qquery.record();
-    Point location;
+    Point loc;
     double runway_length;
     double gmt;
     std::string iata_code;
@@ -135,7 +135,7 @@ std::vector<Airport> get_airports(QSqlQuery qquery)
         longitude = qquery.value(record.indexOf("longitude")).toDouble();
         latitude = qquery.value(record.indexOf("latitude")).toDouble();
         height = qquery.value(record.indexOf("runway_elevation")).toDouble();
-        location = Point{longitude, latitude, height};
+        loc = Point{longitude, latitude, height};
 
         runway_length = qquery.value(record.indexOf("runway_length")).toDouble();
         gmt = qquery.value(record.indexOf("gmt_offset")).toDouble();
@@ -153,7 +153,7 @@ std::vector<Airport> get_airports(QSqlQuery qquery)
         city = {city_eng, city_rus};
         country = {country_eng, country_rus};
 
-        airports.push_back({location,
+        airports.push_back({loc,
                            runway_length,
                             gmt,
                             iata_code,
@@ -168,9 +168,9 @@ std::vector<Airport> get_airports(QSqlQuery qquery)
 }
 
 
-std::vector<Airport> run_query(const AirportQuery& query)
+std::vector<Airport> run_query(const AirportQuery& query, const std::string& db_filepath)
 {
-    QSqlDatabase sdb = connect(SQL_DRIVER, DB_FILEPATH);
+    QSqlDatabase sdb = connect(SQL_DRIVER, QString::fromStdString(db_filepath));
     QString sqlquery = get_sqlquery(query);
     QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
     return get_airports(qquery);
