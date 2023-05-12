@@ -1,6 +1,7 @@
 #include "db_controller.h"
 #include "db_controller.hpp"
 #include <cmath>
+#include <QDebug>
 
 
 const QString SQL_DRIVER = "QSQLITE";
@@ -29,7 +30,7 @@ QString get_sqlquery(const AirportQuery& aq)
     QString sqlquery{"SELECT * FROM airports"};
     std::vector<QString> conditions;
     if (aq.gnt != 0.0)
-        conditions.push_back(QString("gnt = '%1'").arg(aq.gnt));
+        conditions.push_back(QString("gnt = %1").arg(aq.gnt));
     if (aq.min_runway_length != 0.0)
         conditions.push_back(QString("runway_length >= %1").arg(aq.min_runway_length));
     if (aq.iata_code != "")
@@ -99,15 +100,15 @@ QString get_sqlquery(const PlaneQuery& pq)
     QString sqlquery{"SELECT * FROM planes"};
     std::vector<QString> conditions;
     if (pq.min_flight_length != 0.0)
-        conditions.push_back(QString("flight_length >= '%1'").arg(pq.min_flight_length));
+        conditions.push_back(QString("flight_length >= %1").arg(pq.min_flight_length));
     if (pq.min_flight_height != 0.0)
         conditions.push_back(QString("flight_height >= %1").arg(pq.min_flight_height));
     if (pq.min_velocity != 0.0)
-        conditions.push_back(QString("velocity >= '%1'").arg(pq.min_velocity));
+        conditions.push_back(QString("velocity >= %1").arg(pq.min_velocity));
     if (pq.min_weight_capacity != 0.0)
-        conditions.push_back(QString("weight_capacity >= '%1'").arg(pq.min_weight_capacity));
+        conditions.push_back(QString("weight_capacity >= %1").arg(pq.min_weight_capacity));
     if (pq.max_required_runway_length != 0.0)
-        conditions.push_back(QString("required_runway_length <= '%1'").arg(pq.max_required_runway_length));
+        conditions.push_back(QString("required_runway_length <= %1").arg(pq.max_required_runway_length));
 
     if (pq.name.eng != "")
         conditions.push_back(QString("name_eng LIKE '\%%1\%'").arg(QString::fromStdString(pq.name.eng)));
@@ -161,6 +162,7 @@ std::vector<Airport> get_airports(QSqlQuery qquery)
     std::string country_eng;
     std::string country_rus;
 
+    qquery.first();
     while (qquery.next())
     {
         longitude = qquery.value(record.indexOf("longitude")).toDouble();
@@ -214,6 +216,7 @@ std::vector<Plane> get_planes(QSqlQuery qquery)
     std::string name_eng;
     std::string name_rus;
 
+    qquery.first();
     while (qquery.next())
     {
         flight_length = qquery.value(record.indexOf("flight_length")).toDouble();
