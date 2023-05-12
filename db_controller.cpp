@@ -94,6 +94,36 @@ QString get_sqlquery(const AirportQuery& aq)
 }
 
 
+QString get_sqlquery(const PlaneQuery& pq)
+{
+    QString sqlquery{"SELECT * FROM planes"};
+    std::vector<QString> conditions;
+    if (pq.min_flight_length != 0.0)
+        conditions.push_back(QString("flight_length >= '%1'").arg(pq.min_flight_length));
+    if (pq.min_flight_height != 0.0)
+        conditions.push_back(QString("flight_height >= %1").arg(pq.min_flight_height));
+    if (pq.min_velocity != 0.0)
+        conditions.push_back(QString("velocity >= '%1'").arg(pq.min_velocity));
+    if (pq.min_weight_capacity != 0.0)
+        conditions.push_back(QString("weight_capacity >= '%1'").arg(pq.min_weight_capacity));
+    if (pq.max_required_runway_length != 0.0)
+        conditions.push_back(QString("required_runway_length <= '%1'").arg(pq.max_required_runway_length));
+
+    if (pq.name.eng != "")
+        conditions.push_back(QString("name_eng LIKE '\%%1\%'").arg(QString::fromStdString(pq.name.eng)));
+    if (pq.name.rus != "")
+        conditions.push_back(QString("name_rus LIKE '\%%1\%'").arg(QString::fromStdString(pq.name.rus)));
+
+    if (conditions.size() > 0)
+    {
+        sqlquery += " WHERE ";
+        sqlquery += join(conditions.begin(), conditions.end(), std::string(" AND "));
+    }
+
+    return sqlquery;
+}
+
+
 QSqlQuery run_sqlquery(const QString& sqlquery, const QSqlDatabase& sdb)
 {
     QSqlQuery qquery(sdb);
@@ -109,8 +139,8 @@ QSqlQuery run_sqlquery(const QString& sqlquery, const QSqlDatabase& sdb)
 std::vector<Airport> get_airports(QSqlQuery qquery)
 {
     std::vector<Airport> airports;
-
     QSqlRecord record = qquery.record();
+
     Point loc;
     double runway_length;
     double gmt;
@@ -169,10 +199,59 @@ std::vector<Airport> get_airports(QSqlQuery qquery)
 }
 
 
+std::vector<Plane> get_planes(QSqlQuery qquery)
+{
+    std::vector<Plane> planes;
+    QSqlRecord record = qquery.record();
+
+    double flight_length;
+    double flight_height;
+    double velocity;
+    double weight_capacity;
+    double required_runway_length;
+    Name name;
+
+    std::string name_eng;
+    std::string name_rus;
+
+    while (qquery.next())
+    {
+        flight_length = qquery.value(record.indexOf("flight_length")).toDouble();
+        flight_height = qquery.value(record.indexOf("flight_height")).toDouble();
+        velocity = qquery.value(record.indexOf("velocity")).toDouble();
+        weight_capacity = qquery.value(record.indexOf("weight_capacity")).toDouble();
+        required_runway_length = qquery.value(record.indexOf("required_runway_length")).toDouble();
+
+        name_eng = qquery.value(record.indexOf("name_eng")).toString().toStdString();
+        name_rus = qquery.value(record.indexOf("name_rus")).toString().toStdString();
+        name = {name_eng, name_rus};
+
+        planes.push_back({flight_length,
+                          flight_height,
+                          velocity,
+                          weight_capacity,
+                          required_runway_length,
+                          name});
+    }
+
+    return planes;
+
+}
+
+
 std::vector<Airport> run_query(const AirportQuery& query, const std::string& db_filepath)
 {
     QSqlDatabase sdb = connect(SQL_DRIVER, QString::fromStdString(db_filepath));
     QString sqlquery = get_sqlquery(query);
     QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
     return get_airports(qquery);
+}
+
+
+std::vector<Plane> run_query(const PlaneQuery& query, const std::string& db_filepath)
+{
+    QSqlDatabase sdb = connect(SQL_DRIVER, QString::fromStdString(db_filepath));
+    QString sqlquery = get_sqlquery(query);
+    QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
+    return get_planes(qquery);
 }

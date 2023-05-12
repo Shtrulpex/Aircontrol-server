@@ -46,7 +46,7 @@ struct Plane
     double flight_length{0.0};
     double flight_height{0.0};
     double velocity{0.0};
-    double cargo_weight{0.0};
+    double weight_capacity{0.0};
     double required_runway_length{0.0};
     Name name;
 };
@@ -72,8 +72,8 @@ struct PlaneQuery
     double min_flight_length{0.0};
     double min_flight_height{0.0};
     double min_velocity{0.0};
+    double min_weight_capacity{0.0};
     double max_required_runway_length{0.0};
-    double min_cargo_weight{0.0};
     Name name;
 };
 

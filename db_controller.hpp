@@ -6,6 +6,8 @@
 #include <string>
 #include <sstream>
 
+// метод модификации при итерациия (ниблоид)
+
 
 template <typename Iter>
 QString join(Iter begin, Iter end, const std::string& sep)
