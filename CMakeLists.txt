@@ -19,7 +19,9 @@ set(LIB2 tests)
 
 add_library(${LIB1}
             db_controller.h
+            db_controller.hpp
             db_controller.cpp
+            data_struct.h
             database.h)
 
 add_library(${LIB2}
