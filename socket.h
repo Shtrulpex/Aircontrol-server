@@ -21,8 +21,8 @@ public:
 
     Socket            (const Socket&) = default;
     Socket            (Socket&&)      = default;
-    Socket& operator= (const Socket&) = default;
-    Socket& operator= (Socket&&)      = default;
+    Socket& operator= (const Socket&) = delete;
+    Socket& operator= (Socket&&)      = delete;
    
     bool listen  (int queue_size);
     bool connect (std::string ip = "", int port = 0);
