@@ -6,7 +6,7 @@
 #include <QString>
 
 
-QSqlDatabase connect(const QString& driver, const QString& filepath);
+QSqlDatabase connect(const QString& driver, const QString& filepath, const QString& connection_name);
 
 QString get_sqlquery(const AirportQuery&);
 QString get_sqlquery(const PlaneQuery&);
