@@ -5,6 +5,8 @@
 
 
 const QString SQL_DRIVER = "QSQLITE";
+unsigned int airport_connections_cout = 0;
+unsigned int plane_connections_cout = 0;
 
 // Geographic constants
 const double meridian = 40008.548;
@@ -12,9 +14,11 @@ const double equator = 40075.696;
 const double kilometer = 1000;
 
 
-QSqlDatabase connect(const QString& driver, const QString& filepath)
+#include <QtSql>
+
+QSqlDatabase connect(const QString& driver, const QString& filepath, const QString& connection_name)
 {
-    QSqlDatabase sdb = QSqlDatabase::addDatabase(driver);
+    QSqlDatabase sdb = QSqlDatabase::addDatabase(driver, connection_name);
     sdb.setDatabaseName(filepath);
 
     if (!sdb.open())
@@ -244,17 +248,29 @@ std::vector<Plane> get_planes(QSqlQuery qquery)
 
 std::vector<Airport> run_query(const AirportQuery& query, const std::string& db_filepath)
 {
-    QSqlDatabase sdb = connect(SQL_DRIVER, QString::fromStdString(db_filepath));
-    QString sqlquery = get_sqlquery(query);
-    QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
-    return get_airports(qquery);
+    std::vector<Airport> airports;
+    QString connection_name = QString::fromStdString("AirportConnection_%1").arg(airport_connections_cout++);
+    {
+        QSqlDatabase sdb = connect(SQL_DRIVER, QString::fromStdString(db_filepath), connection_name);
+        QString sqlquery = get_sqlquery(query);
+        QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
+        airports = get_airports(qquery);
+    }
+    QSqlDatabase::removeDatabase(connection_name);
+    return airports;
 }
 
 
 std::vector<Plane> run_query(const PlaneQuery& query, const std::string& db_filepath)
 {
-    QSqlDatabase sdb = connect(SQL_DRIVER, QString::fromStdString(db_filepath));
-    QString sqlquery = get_sqlquery(query);
-    QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
-    return get_planes(qquery);
+    std::vector<Plane> planes;
+    QString connection_name = QString::fromStdString("PlaneConnection_%1").arg(plane_connections_cout++);
+    {
+        QSqlDatabase sdb = connect(SQL_DRIVER, QString::fromStdString(db_filepath), connection_name);
+        QString sqlquery = get_sqlquery(query);
+        QSqlQuery qquery = run_sqlquery(sqlquery, sdb);
+        planes = get_planes(qquery);
+    }
+    QSqlDatabase::removeDatabase(connection_name);
+    return planes;
 }

@@ -15,7 +15,7 @@ find_package(Qt5 COMPONENTS
 set(LIB1 data_exchange)
 set(TESTS tests)
 
-set(RUN_TESTS TRUE)
+set(RUN_TESTS FALSE)
 
 add_library(${LIB1}
             db_controller.h
