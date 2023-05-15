@@ -1,11 +1,15 @@
 #include <thread>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <vector>
 
 #include "socket.h"
 #include "database.h"
+
+
+std::string DB_FILEPATH = "../resources/air-planner.sqlite";
 
 
 std::vector<Point> flight_path (const Airport&, const Airport&) 
@@ -21,21 +25,55 @@ void stop_fun()
     std::string s;
     while (1)
     {
-        std::cin >> s;
+        std::getline(std::cin, s);
         transform(s.begin(), s.end(), s.begin(), ::tolower);
         if (s == "stop")
             exit(0);
+        if (s == "change database")
+        {
+            std::cout << "Enter databse path: " << std::flush;
+            std::cin >> DB_FILEPATH;
+            std::cout << "Database set: '" << DB_FILEPATH << "'" << std::endl;
+        }
     }
 }
 
 
 int main(int argc, char *argv[])
 {
+    if (argc != 3)
+    {
+        std::cout << "Incorrect number of arguments (expected ip and port)" << std::endl;
+        return 0;
+    }
+
+    std::string ip = argv[1];
+    int port;
+    {
+        std::istringstream iss(argv[2]);
+        iss >> port;
+    }
+
+    Socket S;
+    try
+    {
+        Socket P (ip, port);
+        S = P;
+    }
+    catch (std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+        return 0;
+    }
+    catch (...)
+    {
+        std::cout << "Unknown error" << std::endl;
+    }
+    std::cout << "ip = " << ip << "\n" << "port = " << port << std::endl;
+    S.listen (10);
+    
     std::thread stop_th (stop_fun);
     stop_th.detach();
-
-    Socket S ("127.11.0.1", 2034);
-    S.listen (10);
 
     while (1)
     {
@@ -50,8 +88,7 @@ int main(int argc, char *argv[])
             {
                 PlaneQuery pq;
                 D >> pq;
-                std::this_thread::sleep_for(std::chrono::seconds(10));
-                std::vector<Plane> res = run_query(pq);
+                std::vector<Plane> res = run_query(pq, DB_FILEPATH);
                 D << res;
             }, std::ref(S));
             plane_th.detach();
@@ -63,7 +100,7 @@ int main(int argc, char *argv[])
             {
                 AirportQuery aq;
                 D >> aq;
-                std::vector<Airport> res = run_query(aq);
+                std::vector<Airport> res = run_query(aq, DB_FILEPATH);
                 D << res;
             }, std::ref(S));
             airport_th.detach();

@@ -20,8 +20,8 @@ public:
     Socket (std::string ip = "", int port = 0);
 
     Socket            (const Socket&) = default;
-    Socket            (Socket&&)      = default;
-    Socket& operator= (const Socket&) = delete;
+    Socket            (Socket&&)      = delete;
+    Socket& operator= (const Socket&) = default;
     Socket& operator= (Socket&&)      = delete;
    
     bool listen  (int queue_size);

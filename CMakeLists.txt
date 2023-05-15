@@ -11,11 +11,13 @@ find_package(Qt5 COMPONENTS
             Sql
             REQUIRED)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 
 set(LIB1 data_exchange)
+set(LIB2 socket)
 set(TESTS tests)
-
-set(RUN_TESTS FALSE)
 
 add_library(${LIB1}
             db_controller.h
@@ -24,29 +26,23 @@ add_library(${LIB1}
             data_struct.h
             database.h)
 
+add_library(${LIB2}
+            fields_count.hpp
+            getter.hpp
+            magic_in
+            magic_out
+            socket.cpp
+            socket.h
+            socket.hpp)
+
 target_link_libraries(${LIB1} PUBLIC
                         Qt5::Sql)
 
-if (RUN_TESTS)
-    add_executable(${PROJECT_NAME}
-                    main_tests.cpp)
+add_executable(${PROJECT_NAME}
+               main.cpp )
 
-    add_library(${TESTS}
-                tests.h
-                tests.cpp)
-
-    target_link_libraries(${TESTS} PUBLIC
-                            ${LIB1}
-                            Qt5::Sql)
-
-    target_link_libraries(${PROJECT_NAME}
-                            ${LIB1}
-                            ${TESTS})
-else()
-    add_executable(${PROJECT_NAME}
-                    main.cpp)
-
-    target_link_libraries(${PROJECT_NAME}
-                            ${LIB1})
-endif()
+target_link_libraries(${PROJECT_NAME}
+                      ${LIB1}
+                      ${LIB2}
+                      Threads::Threads)
 
