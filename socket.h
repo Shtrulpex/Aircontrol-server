@@ -8,8 +8,10 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <memory>
 
 #include <string>
+#include <mutex>
 
 
 class Socket
@@ -17,8 +19,8 @@ class Socket
 public:
     Socket (std::string ip = "", int port = 0);
 
-    Socket            (const Socket&) = delete;
-    Socket            (Socket&&)      = delete;
+    Socket            (const Socket&) = default;
+    Socket            (Socket&&)      = default;
     Socket& operator= (const Socket&) = delete;
     Socket& operator= (Socket&&)      = delete;
    
@@ -35,13 +37,17 @@ public:
     template <typename T>
     Socket& operator>> (T& val);
 
+    template <typename T, bool is_class, bool has_iter>
+    struct io_helper;
+
 private:
     void reset ();
 
-    int self_fd;
-    sockaddr_in self_addr;
-    int rw_fd;
-    sockaddr_in extern_addr;
+    std::shared_ptr<int> self_fd_ptr;
+    std::shared_ptr<sockaddr_in> self_addr_ptr;
+    std::shared_ptr<int> rw_fd_ptr;
+    std::shared_ptr<sockaddr_in> extern_addr_ptr;
+    std::shared_ptr<std::mutex> rw_mutex_ptr;
 };
 
 
