@@ -32,10 +32,10 @@ double path_length(const Airport&, const Airport&, const Plane&);
 
 
 std::vector<Point> flight_path (const Airport&, const Airport&); // without high
-std::vector<Point> flight_path (const Airport&, const Airport&, const Plane&);  // with high //не реализации
+std::vector<Point> flight_path (const Airport&, const Airport&, const Plane&);  // with high //нет реализации
 
 
-bool is_current_plane(const Airport&, const Airport&, const Plane&); // with high
+bool is_current_plane(const Airport&, const Airport&, const Plane&); // without high
 
 
 double high(Point); // не реализации

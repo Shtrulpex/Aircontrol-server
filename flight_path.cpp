@@ -99,7 +99,7 @@ double path_length(const Airport& start, const Airport& finish, const Plane& pla
 
 bool is_current_plane(const Airport& start, const Airport& finish, const Plane& plane)
 {
-    if (plane.flight_length < path_length(start, finish, plane)) return false;
+    if (plane.flight_length < path_length(start, finish)) return false;
     if (plane.runway_length < start.runway_length ||
         plane.runway_length < finish.runway_length)
             return false;
