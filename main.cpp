@@ -7,17 +7,10 @@
 
 #include "socket.h"
 #include "database.h"
+#include "flight_path.h"
 
 
 std::string DB_FILEPATH = "../resources/air-planner.sqlite";
-
-
-std::vector<Point> flight_path (const Airport&, const Airport&) 
-{ std::cout << "path 2D" << std::endl; return { Point{} }; }
-std::vector<Point> flight_path (const Airport&, const Airport&, const Plane&)
-{ std::cout << "path 3D" << std::endl; return { Point{} }; }
-double path_length (const Airport&, const Airport&) 
-{ std::cout << "path len" << std::endl; return 10; }
 
 
 void control_fun(std::string ip, int port)
@@ -163,7 +156,7 @@ int main(int argc, char *argv[])
             path_2D_th.detach();
           } break;
 
-          case PATH_3D:
+/*        case PATH_3D:
           {
             std::thread path_3D_th ([](Socket D)
             {
@@ -176,7 +169,7 @@ int main(int argc, char *argv[])
             }, std::ref(S));
             path_3D_th.detach();
           } break;
-
+*/
         }
     }
 

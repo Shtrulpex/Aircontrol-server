@@ -1,6 +1,8 @@
 #ifndef DATA_STRUCT_H
 #define DATA_STRUCT_H
 
+#include <string>
+
 
 enum QueryType
 {
@@ -8,7 +10,7 @@ enum QueryType
     AIRPORT = 1,
     PATH_LEN = 2,
     PATH_2D = 3,
-    PATH_3D = 4
+//  PATH_3D = 4
 };
 
 

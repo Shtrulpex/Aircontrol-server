@@ -17,6 +17,7 @@ find_package(Threads REQUIRED)
 
 set(LIB1 data_exchange)
 set(LIB2 socket)
+set(LIB3 flight_path)
 set(TESTS tests)
 
 add_library(${LIB1}
@@ -29,11 +30,15 @@ add_library(${LIB1}
 add_library(${LIB2}
             fields_count.hpp
             getter.hpp
-            magic_in
-            magic_out
+            magic_in.hpp
+            magic_out.hpp
             socket.cpp
             socket.h
             socket.hpp)
+
+add_library(${LIB3}
+            flight_path.h
+            flight_path.cpp)
 
 target_link_libraries(${LIB1} PUBLIC
                         Qt5::Sql)
@@ -44,5 +49,6 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
                       ${LIB1}
                       ${LIB2}
+                      ${LIB3}
                       Threads::Threads)
 
