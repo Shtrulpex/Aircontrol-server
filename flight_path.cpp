@@ -1,11 +1,10 @@
-#include <class.h>
-#include <flight_path.h>
+#include "flight_path.h"
 
 
 double angular_path_length (Point A, Point B)
 {
-    return acos(sin(A.latitude)*sin(B.latitude) + 
-                cos(A.latitude)*cos(B.latitude)*cos(B.longtitude-A.longtitude));
+    return acos(sin(A.latitude*w)*sin(B.latitude*w) + 
+                cos(A.latitude*w)*cos(B.latitude*w)*cos(B.longtitude*w-A.longtitude*w));
 }
 
 
@@ -47,9 +46,9 @@ double path_length(const Airport& start, const Airport& finish)
 
 double latitude_function(Point A, Point B, double longtitude)
 {
-    return atan((tan(A.latitude)*sin(B.longtitude - longtitude) + 
-                 tan(B.latitude)*sin(longtitude - A.longtitude)) /
-                 sin(B.longtitude - A.longtitude));
+    return atan((tan(A.latitude*w)*sin(B.longtitude*w - longtitude*w) + 
+                 tan(B.latitude*w)*sin(longtitude*w - A.longtitude*w)) /
+                 sin(B.longtitude*w - A.longtitude)*w);
 }
 
 
@@ -89,21 +88,20 @@ std::vector<Point> flight_path (const Airport& start, const Airport& finish)
 }
 
 
-double path_length(const Airport& start, const Airport& finish, const Plane& plane)
-{
-    std::vector<Point> path = flight_path(start, finish, plane);
-    return path_length(path);
-}
+// double path_length(const Airport& start, const Airport& finish, const Plane& plane)
+// {
+//     std::vector<Point> path = flight_path(start, finish, plane);
+//     return path_length(path);
+// }
 
 
 
 bool is_current_plane(const Airport& start, const Airport& finish, const Plane& plane)
 {
     if (plane.flight_length < path_length(start, finish)) return false;
-    if (plane.runway_length < start.runway_length ||
-        plane.runway_length < finish.runway_length)
+    if (plane.runway_length > start.runway_length ||
+        plane.runway_length > finish.runway_length)
             return false;
     return true;
 }
-
 

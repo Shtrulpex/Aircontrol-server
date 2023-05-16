@@ -1,4 +1,4 @@
-#include <class.h>
+#include "class.h"
 
 /* 
         Класс Airport должен включать как минимум координаты (широта (latitude), 
@@ -18,6 +18,7 @@
 
 constexpr double Earth_radius{6371000};
 constexpr double delta{1000}; // разбиение пути
+constexpr double w{M_PI / 180}; // преобразование в радианы 
 
 
 
