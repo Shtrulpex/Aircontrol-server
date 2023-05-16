@@ -20,21 +20,52 @@ double path_length (const Airport&, const Airport&)
 { std::cout << "path len" << std::endl; return 10; }
 
 
-void stop_fun()
+void control_fun(std::string ip, int port)
 {
     std::string s;
+    std::cout << "Type 'h' or 'help' for command list" << std::endl;
     while (1)
     {
+        std::cout << "> " << std::flush;
         std::getline(std::cin, s);
         transform(s.begin(), s.end(), s.begin(), ::tolower);
         if (s == "stop")
-            exit(0);
-        if (s == "change database")
+        {
+            std::cout << "Are you sure want to stop the server? (type 'y' or 'n') " << std::flush;
+            while (1)
+            {
+                std::string ans;
+                std::getline(std::cin, ans);
+                transform(ans.begin(), ans.end(), ans.begin(), ::tolower);
+                if (ans == "y" || ans == "yes")
+                    exit(0);
+                else if (ans != "n" && ans != "no")
+                    std::cout << "Enter correct value ('y' or 'n') " << std::flush;
+                else 
+                    break;
+            }
+        }
+        else if (s == "change database")
         {
             std::cout << "Enter databse path: " << std::flush;
             std::cin >> DB_FILEPATH;
             std::cout << "Database set: '" << DB_FILEPATH << "'" << std::endl;
         }
+        else if (s == "current database")
+            std::cout << "Current database: '" << DB_FILEPATH << "'" << std::endl;
+        else if (s == "address")
+            std::cout << "ip = " << ip << "\n" << "port = " << port << std::endl;
+        else if (s == "help" || s == "h")
+        {
+            std::cout << "Available commands: \n"
+                      << " - Stop\n"
+                      << " - Change database\n"
+                      << " - Current database\n"
+                      << " - Address\n"
+                      << std::flush;
+        }
+        else 
+            std::cout << "Unknown command: '" << s << "'" << std::endl;
     }
 }
 
@@ -43,7 +74,7 @@ int main(int argc, char *argv[])
 {
     if (argc != 3)
     {
-        std::cout << "Incorrect number of arguments (expected ip and port)" << std::endl;
+        std::cerr << "Incorrect number of arguments (expected ip and port)" << std::endl;
         return 0;
     }
 
@@ -62,18 +93,18 @@ int main(int argc, char *argv[])
     }
     catch (std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
         return 0;
     }
     catch (...)
     {
-        std::cout << "Unknown error" << std::endl;
+        std::cerr << "Unknown error" << std::endl;
     }
     std::cout << "ip = " << ip << "\n" << "port = " << port << std::endl;
     S.listen (10);
     
-    std::thread stop_th (stop_fun);
-    stop_th.detach();
+    std::thread control_th (control_fun, ip, port);
+    control_th.detach();
 
     while (1)
     {
