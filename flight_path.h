@@ -6,7 +6,7 @@
 
 /* 
         Класс Airport должен включать как минимум координаты (широта (latitude), 
-    долгота (longtitude)) в виде точки Point.
+    долгота (longitude)) в виде точки Point.
 
         Функции angular_path_length() и path_length() определяют угловую (в радианах) 
     и обычную (в метрах) длину пути соответственно.
@@ -22,7 +22,6 @@
 
 constexpr double Earth_radius{6371}; // km
 constexpr double delta{1000}; // разбиение пути
-
 
 
 double angular_path_length (Point, Point);
