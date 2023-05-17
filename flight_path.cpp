@@ -2,10 +2,13 @@
 #include "flight_path.h"
 
 
+static constexpr double w{M_PI / 180}; // преобразование в радианы 
+
+
 double angular_path_length (Point A, Point B)
 {
-    return acos(sin(A.latitude)*sin(B.latitude) + 
-                cos(A.latitude)*cos(B.latitude)*cos(B.longitude-A.longitude));
+    return acos(sin(A.latitude*w)*sin(B.latitude*w) + 
+                cos(A.latitude*w)*cos(B.latitude*w)*cos(B.longitude*w-A.longitude*w));
 }
 
 
@@ -27,8 +30,6 @@ double path_length (Point A, Point B)
 }
 
 
-
-
 double path_length (const std::vector<Point>& path){
     double result_len{0};
     for (int i = 0; i < path.size() - 1; i++)
@@ -47,9 +48,9 @@ double path_length(const Airport& start, const Airport& finish)
 
 double latitude_function(Point A, Point B, double longitude)
 {
-    return atan((tan(A.latitude)*sin(B.longitude - longitude) + 
-                 tan(B.latitude)*sin(longitude - A.longitude)) /
-                 sin(B.longitude - A.longitude));
+    return atan((tan(A.latitude*w)*sin(B.longitude*w - longitude*w) + 
+                 tan(B.latitude*w)*sin(longitude*w - A.longitude*w)) /
+                 sin(B.longitude*w - A.longitude)*w);
 }
 
 
@@ -59,7 +60,6 @@ double latitude_function(const Airport& start, const Airport& finish,
     return latitude_function(start.loc, finish.loc, 
                              longitude);
 }
-
 
 
 std::vector<Point> flight_path (const Airport& start, const Airport& finish)
@@ -88,13 +88,12 @@ std::vector<Point> flight_path (const Airport& start, const Airport& finish)
     return path;
 }
 
-/*
-double path_length(const Airport& start, const Airport& finish, const Plane& plane)
-{
-    std::vector<Point> path = flight_path(start, finish, plane);
-    return path_length(path);
-}
-*/
+
+// double path_length(const Airport& start, const Airport& finish, const Plane& plane)
+// {
+//     std::vector<Point> path = flight_path(start, finish, plane);
+//     return path_length(path);
+// }
 
 
 bool is_current_plane(const Airport& start, const Airport& finish, const Plane& plane)
@@ -105,5 +104,4 @@ bool is_current_plane(const Airport& start, const Airport& finish, const Plane& 
             return false;
     return true;
 }
-
 

@@ -37,10 +37,10 @@ public:
     template <typename T>
     Socket& operator>> (T& val);
 
+private:
     template <typename T, bool is_class, bool has_iter>
     struct io_helper;
 
-private:
     void reset ();
 
     std::shared_ptr<int> self_fd_ptr;
