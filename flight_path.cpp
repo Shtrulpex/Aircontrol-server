@@ -66,6 +66,13 @@ double right_longtitude (double longtitude)
     return (longtitude > 0) ? longtitude - 360 : longtitude + 360;
 }
 
+// [-180; 180] -> [-90; 90]
+double right_latitude (double latitude)
+{
+    if (std::abs(latitude) <= 90) return latitude;
+    return (latitude > 0) ? 180 - latitude : -180 - latitude;
+}
+
 //  разница между долготами
 double delta_longtitude (Point A, Point B)
 {
@@ -75,6 +82,16 @@ double delta_longtitude (Point A, Point B)
     return (A.longtitude > 0) ? delta_A_B + 360 : delta_A_B - 360;
 }
 
+//  разница между широтами
+double delta_latitude (Point A, Point B)
+{
+    if (A.longtitude == B.longtitude) return B.latitude - A.latitude;
+
+    //if (abs(A.longtitude - B.longtitude) == 180)
+    return (A.longtitude > 0) ? 180 - (A.latitude + B.latitude) :
+                                -180 - (A.latitude + B.latitude);
+}
+
 // применяется при одинаковой долготе у Point A и Point B 
 std::vector<Point> single_flight_path (Point A, Point B)
 {
@@ -82,22 +99,47 @@ std::vector<Point> single_flight_path (Point A, Point B)
     path[0] = A;
     path[delta-1] = B;
 
-    double current_latitude{path[0].latitude};
+    double current_latitude{A.latitude};
 
     for (int i = 1; i < delta - 1; i++)
     {
-        current_latitude += (B.latitude - A.latitude) / (delta - 1);
+        current_latitude += delta_latitude(A, B) / (delta - 1);
 
         path[i] = Point{current_latitude, A.longtitude, -1};
     }
     return path;
 }
 
+// применяется при долготах с разностью в +-180  
+std::vector<Point> communicating_longtitudes(Point A, Point B)
+{
+    std::vector<Point> path(delta);
+    path[0] = A;
+    path[delta-1] = B;
+
+    double current_latitude{A.latitude};
+    double current_longtitude{A.longtitude};
+
+    for (int i = 1; i < delta - 1; i++)
+    {
+        current_latitude += delta_latitude(A, B) / (delta - 1);
+
+        if (current_latitude != right_latitude(current_latitude))
+            current_longtitude = B.longtitude;
+
+        path[i] = Point{right_latitude(current_latitude), current_longtitude, -1};
+        
+    }
+    return path;
+}   
+
 
 std::vector<Point> flight_path (Point A, Point B)
 {
     if (A.longtitude == B.longtitude) 
         return single_flight_path(A, B);
+    if (std::abs(A.longtitude - B.longtitude) == 180.0)
+        return  communicating_longtitudes(A, B);
 
     std::vector<Point> path(delta);
 
