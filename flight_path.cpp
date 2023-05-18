@@ -46,12 +46,12 @@ double path_length(const Airport& start, const Airport& finish)
 
 double latitude_function(Point A, Point B, double longtitude)
 {
+    if (A.longtitude > B.longtitude) std::swap(A, B);
     return atan((tan(A.latitude*w)*sin(B.longtitude*w - longtitude*w) + 
                  tan(B.latitude*w)*sin(longtitude*w - A.longtitude*w)) /
-                 sin(B.longtitude*w - A.longtitude)*w)/w;
+                 sin(B.longtitude*w - A.longtitude*w))/w;
 }
-
-
+    
 double latitude_function(const Airport& start, const Airport& finish,
                          double longtitude)
 {
@@ -78,7 +78,7 @@ std::vector<Point> flight_path (Point A, Point B)
 
     for (int i = 1; i < delta - 1; i++)
     {
-        current_longtitude += angular_path_length(A, B)/w / (delta - 1);
+        current_longtitude += (B.longtitude - A.longtitude) / (delta - 1);
         current_latitude = latitude_function (A, B, 
                                               current_longtitude);
 
