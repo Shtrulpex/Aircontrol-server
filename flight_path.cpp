@@ -59,19 +59,36 @@ double latitude_function(const Airport& start, const Airport& finish,
                              longtitude);
 }
 
+// одинаковая долгота у Point A и Point B 
+std::vector<Point> single_flight_path(Point A, Point B)
+{
+    std::vector<Point> path(delta);
+    path[0] = A;
+    path[delta-1] = B;
+
+    double current_latitude{path[0].latitude};
+
+    for (int i = 1; i < delta - 1; i++)
+    {
+        current_latitude += (B.latitude - A.latitude) / (delta - 1);
+
+        path[i] = Point{current_latitude, A.longtitude, -1};
+    }
+    return path;
+}
 
 
 std::vector<Point> flight_path (Point A, Point B)
 {
-    double Length{path_length(A, B)};
+    if (A.longtitude == B.longtitude) 
+        return single_flight_path(A, B);
 
+    double Length{path_length(A, B)};
 
     std::vector<Point> path(delta);
 
     path[0] = A;
-
     path[delta-1] = B;
-
 
     double current_longtitude{path[0].longtitude};
     double current_latitude{path[0].latitude};

@@ -31,6 +31,9 @@ double path_length (const std::vector<Point>&);
 double path_length(const Airport&, const Airport&);
 double path_length(const Airport&, const Airport&, const Plane&);
 
+// одинаковая долгота у Point A и Point B 
+std::vector<Point> single_flight_path(Point, Point);
+
 std::vector<Point> flight_path (Point, Point);
 std::vector<Point> flight_path (const Airport&, const Airport&); // without high
 std::vector<Point> flight_path (const Airport&, const Airport&, const Plane&);  // with high //нет реализации
