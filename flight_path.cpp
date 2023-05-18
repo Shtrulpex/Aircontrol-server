@@ -48,10 +48,10 @@ double path_length(const Airport& start, const Airport& finish)
 
 double latitude_function(Point A, Point B, double longitude)
 {
-    if (A.longtitude > B.longtitude) std::swap(A, B);
-    return atan((tan(A.latitude*w)*sin(B.longtitude*w - longtitude*w) + 
-                 tan(B.latitude*w)*sin(longtitude*w - A.longtitude*w)) /
-                 sin(B.longtitude*w - A.longtitude*w))/w;
+    if (A.longitude > B.longitude) std::swap(A, B);
+    return atan((tan(A.latitude*w)*sin(B.longitude*w - longitude*w) + 
+                 tan(B.latitude*w)*sin(longitude*w - A.longitude*w)) /
+                 sin(B.longitude*w - A.longitude*w))/w;
 }
     
 double latitude_function(const Airport& start, const Airport& finish,
@@ -62,36 +62,36 @@ double latitude_function(const Airport& start, const Airport& finish,
 }
 
 // [-360; 360] -> [-180; 180]
-double right_longtitude (double longtitude)
+double right_longitude (double longitude)
 {
-    if (std::abs(longtitude) <= 180) return longtitude;
-    return (longtitude > 0) ? longtitude - 360 : longtitude + 360;
+    if (std::abs(longitude) <= 180) return longitude;
+    return (longitude > 0) ? longitude - 360.0 : longitude + 360.0;
 }
 
 // [-180; 180] -> [-90; 90]
 double right_latitude (double latitude)
 {
     if (std::abs(latitude) <= 90) return latitude;
-    return (latitude > 0) ? 180 - latitude : -180 - latitude;
+    return (latitude > 0) ? 180.0 - latitude : -180.0 - latitude;
 }
 
 //  разница между долготами
-double delta_longtitude (Point A, Point B)
+double delta_longitude (Point A, Point B)
 {
-    double delta_A_B{B.longtitude - A.longtitude};
+    double delta_A_B{B.longitude - A.longitude};
 
     if (std::abs(delta_A_B) <= 180) return delta_A_B;
-    return (A.longtitude > 0) ? delta_A_B + 360 : delta_A_B - 360;
+    return (A.longitude > 0) ? delta_A_B + 360.0 : delta_A_B - 360.0;
 }
 
 //  разница между широтами
 double delta_latitude (Point A, Point B)
 {
-    if (A.longtitude == B.longtitude) return B.latitude - A.latitude;
+    if (A.longitude == B.longitude) return B.latitude - A.latitude;
 
-    //if (abs(A.longtitude - B.longtitude) == 180)
-    return (A.longtitude > 0) ? 180 - (A.latitude + B.latitude) :
-                                -180 - (A.latitude + B.latitude);
+    //if (abs(A.longitude - B.longitude) == 180)
+    return (A.longitude > 0) ? 180.0 - (A.latitude + B.latitude) :
+                               -180.0 - (A.latitude + B.latitude);
 }
 
 // применяется при одинаковой долготе у Point A и Point B 
@@ -107,29 +107,37 @@ std::vector<Point> single_flight_path (Point A, Point B)
     {
         current_latitude += delta_latitude(A, B) / (delta - 1);
 
-        path[i] = Point{current_latitude, A.longtitude, -1};
+        Point p; 
+        p.latitude = current_latitude;
+        p.longitude = A.longitude;
+
+        path[i] = p;
     }
     return path;
 }
 
 // применяется при долготах с разностью в +-180  
-std::vector<Point> communicating_longtitudes(Point A, Point B)
+std::vector<Point> communicating_longitudes(Point A, Point B)
 {
     std::vector<Point> path(delta);
     path[0] = A;
     path[delta-1] = B;
 
     double current_latitude{A.latitude};
-    double current_longtitude{A.longtitude};
+    double current_longitude{A.longitude};
 
     for (int i = 1; i < delta - 1; i++)
     {
         current_latitude += delta_latitude(A, B) / (delta - 1);
 
         if (current_latitude != right_latitude(current_latitude))
-            current_longtitude = B.longtitude;
+            current_longitude = B.longitude;
 
-        path[i] = Point{right_latitude(current_latitude), current_longtitude, -1};
+        Point p; 
+        p.latitude = right_latitude(current_latitude);
+        p.longitude = current_longitude;
+
+        path[i] = p;
         
     }
     return path;
@@ -138,32 +146,32 @@ std::vector<Point> communicating_longtitudes(Point A, Point B)
 
 std::vector<Point> flight_path (Point A, Point B)
 {
-    if (A.longtitude == B.longtitude) 
+    if (A.longitude == B.longitude) 
         return single_flight_path(A, B);
-    if (std::abs(A.longtitude - B.longtitude) == 180.0)
-        return  communicating_longtitudes(A, B);
+    if (std::abs(A.longitude - B.longitude) == 180.0)
+        return  communicating_longitudes(A, B);
 
     std::vector<Point> path(delta);
 
     path[0] = A;
     path[delta-1] = B;
 
-    path[delta-1] = finish.location;
+    double current_longitude{A.longitude};
+    double current_latitude{A.latitude};
 
-
-    double current_longtitude{path[0].longtitude};
-    double current_latitude{path[0].latitude};
-
-    double delta_long{delta_longtitude (A, B)};
+    double delta_long{delta_longitude (A, B)};
 
     for (int i = 1; i < delta - 1; i++)
     {
-        current_longtitude = right_longtitude (current_longtitude +
+        current_longitude = right_longitude (current_longitude +
                                                delta_long / (delta - 1));
         current_latitude = latitude_function (A, B, 
-                                              current_longtitude);
+                                              current_longitude);
 
-        path[i] = Point{current_latitude, current_longitude, -1};
+        Point p; 
+        p.latitude = current_latitude;
+        p.longitude = current_longitude;
+        path[i] = p;
     }
     return path;
 }
@@ -171,7 +179,7 @@ std::vector<Point> flight_path (Point A, Point B)
 
 std::vector<Point> flight_path (const Airport& start, const Airport& finish)
 {
-    return flight_path (start.location, finish.location);
+    return flight_path (start.loc, finish.loc);
 }
 
 

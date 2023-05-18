@@ -33,18 +33,18 @@ double path_length (const std::vector<Point>&);
 double path_length(const Airport&, const Airport&);
 //double path_length(const Airport&, const Airport&, const Plane&);
 
-double right_longtitude(double); // [-360; 360] -> [-180; 180]
+double right_longitude(double); // [-360; 360] -> [-180; 180]
 double right_latitude (double); // [-180; 180] -> [-90; 90]
 
 //  разница между долготами
-double delta_longtitude(Point, Point);
+double delta_longitude(Point, Point);
 //  разница между широтами
 double delta_latitude (Point, Point);
 
 // применяется при одинаковой долготе у Point A и Point B 
 std::vector<Point> single_flight_path(Point, Point);
 // применяется при долготах с разностью в +-180  
-std::vector<Point> communicating_longtitudes(Point A, Point B);
+std::vector<Point> communicating_longitudes(Point A, Point B);
 
 std::vector<Point> flight_path (Point, Point);
 std::vector<Point> flight_path (const Airport&, const Airport&); // without high
