@@ -1,8 +1,12 @@
-#include "class.h"
+#ifndef FLIGHT_PATH
+#define FLIGHT_PATH 1
+
+#include <vector>
+#include "data_struct.h"
 
 /* 
         Класс Airport должен включать как минимум координаты (широта (latitude), 
-    долгота (longtitude)) в виде точки Point.
+    долгота (longitude)) в виде точки Point.
 
         Функции angular_path_length() и path_length() определяют угловую (в радианах) 
     и обычную (в метрах) длину пути соответственно.
@@ -18,8 +22,6 @@
 
 constexpr double Earth_radius{6371000};
 constexpr double delta{1000}; // разбиение пути
-constexpr double w{M_PI / 180}; // преобразование в радианы 
-constexpr double max_legth{M_PI * Earth_radius}; // длина пути не превосходит pi*R
 
 
 double angular_path_length (Point, Point);
@@ -29,7 +31,7 @@ double path_length (double angular);
 double path_length (Point, Point);
 double path_length (const std::vector<Point>&);
 double path_length(const Airport&, const Airport&);
-double path_length(const Airport&, const Airport&, const Plane&);
+//double path_length(const Airport&, const Airport&, const Plane&);
 
 double right_longtitude(double); // [-360; 360] -> [-180; 180]
 double right_latitude (double); // [-180; 180] -> [-90; 90]
@@ -46,10 +48,12 @@ std::vector<Point> communicating_longtitudes(Point A, Point B);
 
 std::vector<Point> flight_path (Point, Point);
 std::vector<Point> flight_path (const Airport&, const Airport&); // without high
-std::vector<Point> flight_path (const Airport&, const Airport&, const Plane&);  // with high //нет реализации
+//std::vector<Point> flight_path (const Airport&, const Airport&, const Plane&);  // with high //нет реализации
 
 
 bool is_current_plane(const Airport&, const Airport&, const Plane&); // without high
 
 
-double high(Point); // не реализации
+//double high(Point); // не реализации
+
+#endif

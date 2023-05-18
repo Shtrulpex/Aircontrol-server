@@ -1,16 +1,20 @@
+#include <cmath>
 #include "flight_path.h"
+
+
+static constexpr double w{M_PI / 180}; // преобразование в радианы 
 
 
 double angular_path_length (Point A, Point B)
 {
     return acos(sin(A.latitude*w)*sin(B.latitude*w) + 
-                cos(A.latitude*w)*cos(B.latitude*w)*cos(B.longtitude*w-A.longtitude*w));
+                cos(A.latitude*w)*cos(B.latitude*w)*cos(B.longitude*w-A.longitude*w));
 }
 
 
 double angular_path_length(const Airport& start, const Airport& finish)
 {
-    return angular_path_length (start.location, finish.location);
+    return angular_path_length (start.loc, finish.loc);
 }
 
 
@@ -24,8 +28,6 @@ double path_length (Point A, Point B)
 {
     return Earth_radius * angular_path_length(A, B);
 }
-
-
 
 
 double path_length (const std::vector<Point>& path){
@@ -44,7 +46,7 @@ double path_length(const Airport& start, const Airport& finish)
 }
 
 
-double latitude_function(Point A, Point B, double longtitude)
+double latitude_function(Point A, Point B, double longitude)
 {
     if (A.longtitude > B.longtitude) std::swap(A, B);
     return atan((tan(A.latitude*w)*sin(B.longtitude*w - longtitude*w) + 
@@ -53,10 +55,10 @@ double latitude_function(Point A, Point B, double longtitude)
 }
     
 double latitude_function(const Airport& start, const Airport& finish,
-                         double longtitude)
+                         double longitude)
 {
-    return latitude_function(start.location, finish.location, 
-                             longtitude);
+    return latitude_function(start.loc, finish.loc, 
+                             longitude);
 }
 
 // [-360; 360] -> [-180; 180]
@@ -146,6 +148,9 @@ std::vector<Point> flight_path (Point A, Point B)
     path[0] = A;
     path[delta-1] = B;
 
+    path[delta-1] = finish.location;
+
+
     double current_longtitude{path[0].longtitude};
     double current_latitude{path[0].latitude};
 
@@ -158,7 +163,7 @@ std::vector<Point> flight_path (Point A, Point B)
         current_latitude = latitude_function (A, B, 
                                               current_longtitude);
 
-        path[i] = Point{current_latitude, current_longtitude, -1};
+        path[i] = Point{current_latitude, current_longitude, -1};
     }
     return path;
 }
@@ -177,13 +182,13 @@ std::vector<Point> flight_path (const Airport& start, const Airport& finish)
 // }
 
 
-
 bool is_current_plane(const Airport& start, const Airport& finish, const Plane& plane)
 {
     if (plane.flight_length < path_length(start, finish)) return false;
-    if (plane.runway_length > start.runway_length ||
-        plane.runway_length > finish.runway_length)
+    if ((plane.required_runway_length > start.runway_length) ||
+        (plane.required_runway_length > finish.runway_length)) 
             return false;
     return true;
 }
+
 

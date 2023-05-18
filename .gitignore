@@ -2,6 +2,7 @@
 # ----------------------------------------------------------------------------
 
 *~
+*resources/air-planner.sqlite.sqbpro
 *.autosave
 *.a
 *.core
@@ -74,3 +75,6 @@ Thumbs.db
 *.dll
 *.exe
 CMakeLists.txt.user
+
+serv*
+clie*
