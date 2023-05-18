@@ -19,7 +19,7 @@
 constexpr double Earth_radius{6371000};
 constexpr double delta{1000}; // разбиение пути
 constexpr double w{M_PI / 180}; // преобразование в радианы 
-
+constexpr double max_legth{M_PI * Earth_radius}; // длина пути не превосходит pi*R
 
 
 double angular_path_length (Point, Point);
@@ -31,7 +31,12 @@ double path_length (const std::vector<Point>&);
 double path_length(const Airport&, const Airport&);
 double path_length(const Airport&, const Airport&, const Plane&);
 
-// одинаковая долгота у Point A и Point B 
+double right_longtitude(double); // [-360; 360] -> [-180; 180]
+
+//  разница между долготами
+double delta_longtitude(Point, Point);
+
+// применяется при одинаковой долготе у Point A и Point B 
 std::vector<Point> single_flight_path(Point, Point);
 
 std::vector<Point> flight_path (Point, Point);

@@ -59,8 +59,24 @@ double latitude_function(const Airport& start, const Airport& finish,
                              longtitude);
 }
 
-// одинаковая долгота у Point A и Point B 
-std::vector<Point> single_flight_path(Point A, Point B)
+// [-360; 360] -> [-180; 180]
+double right_longtitude (double longtitude)
+{
+    if (std::abs(longtitude) <= 180) return longtitude;
+    return (longtitude > 0) ? longtitude - 360 : longtitude + 360;
+}
+
+//  разница между долготами
+double delta_longtitude (Point A, Point B)
+{
+    double delta_A_B{B.longtitude - A.longtitude};
+
+    if (std::abs(delta_A_B) <= 180) return delta_A_B;
+    return (A.longtitude > 0) ? delta_A_B + 360 : delta_A_B - 360;
+}
+
+// применяется при одинаковой долготе у Point A и Point B 
+std::vector<Point> single_flight_path (Point A, Point B)
 {
     std::vector<Point> path(delta);
     path[0] = A;
@@ -83,8 +99,6 @@ std::vector<Point> flight_path (Point A, Point B)
     if (A.longtitude == B.longtitude) 
         return single_flight_path(A, B);
 
-    double Length{path_length(A, B)};
-
     std::vector<Point> path(delta);
 
     path[0] = A;
@@ -93,9 +107,12 @@ std::vector<Point> flight_path (Point A, Point B)
     double current_longtitude{path[0].longtitude};
     double current_latitude{path[0].latitude};
 
+    double delta_long{delta_longtitude (A, B)};
+
     for (int i = 1; i < delta - 1; i++)
     {
-        current_longtitude += (B.longtitude - A.longtitude) / (delta - 1);
+        current_longtitude = right_longtitude (current_longtitude +
+                                               delta_long / (delta - 1));
         current_latitude = latitude_function (A, B, 
                                               current_longtitude);
 
