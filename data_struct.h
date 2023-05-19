@@ -10,7 +10,7 @@ enum QueryType
     AIRPORT = 1,
     PATH_LEN = 2,
     PATH_2D = 3,
-//  PATH_3D = 4
+    REACHABLE = 4
 };
 
 
