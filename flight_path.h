@@ -53,7 +53,10 @@ std::vector<Point> flight_path (const Airport&, const Airport&); // without high
 
 bool is_current_plane(const Airport&, const Airport&, const Plane&); // without high
 
+std::vector<Airport> reached_Airports(const Airport&, const Plane&, 
+                                      const std::vector<Airport>& Airports);
 
-//double high(Point); // не реализации
+std::vector<Airport*> reached_Airports(const Airport&, const Plane&, 
+                                      const std::vector<Airport*>& Airports);
 
 #endif
