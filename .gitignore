@@ -59,6 +59,9 @@ Thumbs.db
 *.opensdf
 *.vcxproj
 *vcxproj.*
+*.vscode
+*build
+
 
 # MinGW generated files
 *.Debug
