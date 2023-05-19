@@ -22,7 +22,8 @@ void control_fun(std::string ip, int port)
         std::cout << "> " << std::flush;
         std::getline(std::cin, s);
         transform(s.begin(), s.end(), s.begin(), ::tolower);
-        if (s == "stop")
+        if (s == "") {}
+        else if (s == "stop")
         {
             std::cout << "Are you sure want to stop the server? (type 'y' or 'n') " << std::flush;
             while (1)
@@ -40,8 +41,8 @@ void control_fun(std::string ip, int port)
         }
         else if (s == "change database")
         {
-            std::cout << "Enter databse path: " << std::flush;
-            std::cin >> DB_FILEPATH;
+            std::cout << "Enter database path: " << std::flush;
+            std::getline(std::cin, DB_FILEPATH);
             std::cout << "Database set: '" << DB_FILEPATH << "'" << std::endl;
         }
         else if (s == "current database")
