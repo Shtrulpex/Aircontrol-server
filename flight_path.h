@@ -20,7 +20,7 @@
 */
 
 
-constexpr double Earth_radius{6371000};
+constexpr double Earth_radius{6371};
 constexpr double delta{1000}; // разбиение пути
 
 
