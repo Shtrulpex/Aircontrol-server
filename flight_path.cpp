@@ -199,4 +199,29 @@ bool is_current_plane(const Airport& start, const Airport& finish, const Plane& 
     return true;
 }
 
+std::vector<Airport> reached_Airports(const Airport& start, const Plane& plane, 
+                                      const std::vector<Airport>& Airports)
+{
+    std::vector<Airport> vec;
 
+    for (int i = 0; i < Airports.size(); i++)
+    {
+        if (is_current_plane(start, Airports[i], plane))
+            vec.push_back(Airports[i]);
+    }
+    return vec;
+}
+
+
+std::vector<Airport*> reached_Airports(const Airport& start, const Plane& plane, 
+                                      const std::vector<Airport*>& Airports)
+{
+    std::vector<Airport*> vec;
+
+    for (int i = 0; i < Airports.size(); i++)
+    {
+        if (is_current_plane(start, *(Airports[i]), plane))
+            vec.push_back(Airports[i]);
+    }
+    return vec;
+}

@@ -157,20 +157,19 @@ int main(int argc, char *argv[])
             path_2D_th.detach();
           } break;
 
-/*        case PATH_3D:
+          case REACHABLE:
           {
-            std::thread path_3D_th ([](Socket D)
+            std::thread reachable_th ([](Socket D)
             {
-                Airport a1;
-                Airport a2;
+                AirportQuery aq;
+                Airport a;
                 Plane p;
-                D >> a1 >> a2 >> p;
-                std::vector<Point> res = flight_path (a1, a2, p);
+                D >> aq >> a >> p;
+                std::vector<Airport> res = reached_Airports (a, p, run_query (aq, DB_FILEPATH));
                 D << res;
             }, std::ref(S));
-            path_3D_th.detach();
+            reachable_th.detach();
           } break;
-*/
         }
     }
 
