@@ -166,7 +166,6 @@ std::vector<Airport> get_airports(QSqlQuery qquery)
     std::string country_eng;
     std::string country_rus;
 
-    qquery.first();
     while (qquery.next())
     {
         longitude = qquery.value(record.indexOf("longitude")).toDouble();
@@ -220,7 +219,6 @@ std::vector<Plane> get_planes(QSqlQuery qquery)
     std::string name_eng;
     std::string name_rus;
 
-    qquery.first();
     while (qquery.next())
     {
         flight_length = qquery.value(record.indexOf("flight_length")).toDouble();
